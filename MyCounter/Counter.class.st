@@ -35,3 +35,10 @@ Counter >> increment [
 count := count + 1
 
 ]
+
+{ #category : 'initialization' }
+Counter >> initialize [ 
+
+super initialize.
+ count:=0
+]
