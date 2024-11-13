@@ -33,62 +33,29 @@ MyPawnTest >> testBlackPawnMovesDoubleStep [
 ]
 
 { #category : 'tests' }
-MyPawnTest >> testCaptureSquares [ 
-    | board whitePawn blackPawn whiteSquare blackSquare captureMoves allyPawn allySquare emptySquare |
-    
-    "Créer un plateau de jeu vide"
-    board := MyChessBoard new.
-    
-    "Placer un pion blanc sur e5"
-    whitePawn := MyPawn white.
-    whiteSquare := board at: 'e5'.
-    whitePawn square: whiteSquare.
+MyPawnTest >> testDiagonalPawnCaptures [
 
-    "Placer un pion noir sur d6 et f6"
-    blackPawn := MyPawn black.
-    blackSquare := board at: 'd6'.
-    blackPawn square: blackSquare.
+	| pawn board enemyPawn1 enemyPawn2 capturePawn expectedSquares |
+	"Créer un échiquier vide"
+	board := MyChessBoard empty.
 
-    "Vérifier les cases où le pion blanc peut capturer"
-    captureMoves := whitePawn captureSquares.
-    "Afficher les cases où le pion blanc peut capturer"
-    captureMoves do: [ :square |
-        Transcript show: 'Capture possible sur: ', square name; cr.
-    ].
-    "Vérifier que le pion blanc peut capturer sur d6 et f6"
-    captureMoves shouldContain: (board at: 'd6'). "Capture diagonale gauche"
-    captureMoves shouldContain: (board at: 'f6'). "Capture diagonale droite"
+	"Placer un pion blanc sur la case 'd4'"
+	board at: 'd4' put: (pawn := MyPawn white).
 
-    "Placer un pion blanc sur d6 pour tester que le pion blanc ne peut pas capturer ses propres pièces"
-    allyPawn := MyPawn white.
-    allySquare := board at: 'd6'.
-    allyPawn square: allySquare.
-    
-    "Vérifier que d6 n'est plus une case où le pion blanc peut capturer"
-    captureMoves := whitePawn captureSquares.
-    captureMoves shouldNotContain: allySquare. "La case d6 ne doit plus être une capture valide"
+	"Placer des pions ennemis sur les cases de capture diagonale"
+	board at: 'c5' put: (enemyPawn1 := MyPawn black).
+	board at: 'e5' put: (enemyPawn2 := MyPawn black).
 
-    "Placer une case vide pour tester les captures sur une case sans pièce ennemie"
-    emptySquare := board at: 'e6'.
-    
-    "Vérifier que e6 n'est pas une case de capture valide"
-    captureMoves := whitePawn captureSquares.
-    captureMoves shouldNotContain: emptySquare. "La case e6 ne doit pas être une capture valide"
-    
-    "Tester pour un pion noir (capture diagonale vers le bas)"
-    blackPawn := MyPawn black.
-    blackSquare := board at: 'e4'.
-    blackPawn square: blackSquare.
-    captureMoves := blackPawn captureSquares.
-    
-    "Vérifier les captures possibles pour un pion noir"
-    captureMoves do: [ :square |
-        Transcript show: 'Capture possible sur: ', square name; cr.
-    ].
-    captureMoves shouldContain: (board at: 'd3'). "Capture diagonale gauche pour pion noir"
-    captureMoves shouldContain: (board at: 'f3'). "Capture diagonale droite pour pion noir"
+	"Calculer les mouvements de capture légaux"
+	capturePawn := pawn diagonalPawnCaptures.
 
+	"Créer la collection des cases attendues"
+	expectedSquares := OrderedCollection new.
+	expectedSquares add: (board at: 'c5'). "Capture à gauche"
+	expectedSquares add: (board at: 'e5'). "Capture à droite"
 
+	"Vérifier que le pion peut capturer les pions ennemis diagonaux"
+	self assert: capturePawn asSet equals: expectedSquares asSet
 ]
 
 { #category : 'tests' }

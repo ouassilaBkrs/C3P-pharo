@@ -9,20 +9,48 @@ Class {
 }
 
 { #category : 'as yet unclassified' }
-MyPawn >> diagonalCaptures: aBoolean [ 
-    | legalMoves direction |
-    legalMoves := OrderedCollection new.
-    direction := self isWhite ifTrue: [ 1 ] ifFalse: [ -1 ].
+MyPawn >> diagonalCaptures: aBoolean [
+	" si couleur est diff de self et regard ele contenu de la diagonle , ajoute a liste target des pions que tu peux manger  square up left et square up righ"
+	|captureSquares|
+	
+ captureSquares := OrderedCollection new.
+    self isWhite
+        ifTrue: [
+            captureSquares add: (square up left).
+            captureSquares add: (square up right).
+        ]
+        ifFalse: [
+            captureSquares add: (square down left).
+            captureSquares add: (square down right).
+        ].
+    ^ captureSquares
+]
 
-    { self square left. self square right } do: [ :captureSquare |
-        captureSquare ifNotNil: [
-            captureSquare up: direction ifAbsent: [] do: [ :target |
-                (target hasPiece and: [ target contents color ~= self color ]) ifTrue: [
-                    legalMoves add: target ] ] ] ].
-    
-    ^ legalMoves
+{ #category : 'as yet unclassified' }
+MyPawn >> diagonalPawnCaptures [
 
+	| leftCapture rightCapture captureSquares |
+	"Calcul des cases diagonales pour les captures"
+	leftCapture := self isWhite
+		               ifTrue: [ square up left ]
+		               ifFalse: [ square down left ].
 
+	rightCapture := self isWhite
+		                ifTrue: [ square up right ]
+		                ifFalse: [ square down right ].
+
+	"Filtrer les cases qui contiennent une pièce de couleur opposée"
+	captureSquares := OrderedCollection new.
+	
+	leftCapture notNil ifTrue: [
+		(leftCapture hasPiece and: [ leftCapture contents color ~= color ])
+			ifTrue: [ captureSquares add: leftCapture ] ].
+
+	rightCapture notNil ifTrue: [
+		(rightCapture hasPiece and: [ rightCapture contents color ~= color ])
+			ifTrue: [ captureSquares add: rightCapture ] ].
+
+	^ captureSquares
 ]
 
 { #category : 'accessing' }
@@ -71,23 +99,19 @@ MyPawn >> setPosition: aSquare [
 { #category : 'rendering' }
 MyPawn >> targetSquaresLegal: aBoolean [
 
-    | fowardOne fowardTwo potentialSquares |
-    
-    fowardOne := self isWhite
-                    ifTrue: [ square up ]
-                    ifFalse: [ square down ].
-                    
-    fowardTwo := self isWhite
-                    ifTrue: [ square up up ]
-                    ifFalse: [ square down down ].
+	| singleStepSquare doubleStepSquare potentialSquares |
+	singleStepSquare := self isWhite
+		             ifTrue: [ square up ]
+		             ifFalse: [ square down ].
 
-    potentialSquares := (self isFirstMove and: [ fowardTwo hasPiece not ] )   " a mettre dans le return "
-        ifTrue: [ { fowardTwo }, {fowardOne } ]
-        ifFalse: [ { fowardOne } ].
+	doubleStepSquare := self isWhite
+		             ifTrue: [ square up up ]
+		             ifFalse: [ square down down ].
 
-    ^ potentialSquares select: [ :s | 
-        s notNil and: [ 
-            (s hasPiece not or: [ s contents color ~= color ])
-        ]
-    ].
+	potentialSquares := (self isFirstMove and: [ doubleStepSquare hasPiece not ])
+		                    ifTrue: [ { singleStepSquare} , { doubleStepSquare } ]
+		                    ifFalse: [ { singleStepSquare } ]. " a mettre dans le return "
+
+	^ potentialSquares select: [ :s |
+		  s notNil and: [ s hasPiece not or: [ s contents color ~= color ] ] ]
 ]
