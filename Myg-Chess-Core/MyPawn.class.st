@@ -2,7 +2,8 @@ Class {
 	#name : 'MyPawn',
 	#superclass : 'MyPiece',
 	#instVars : [
-		'hasMoved'
+		'hasMoved',
+		'state'
 	],
 	#category : 'Myg-Chess-Core',
 	#package : 'Myg-Chess-Core'
@@ -63,6 +64,7 @@ MyPawn >> id [
 MyPawn >> initialize [ 
     super initialize.
     hasMoved := false.
+	state := MyInitialMoveState new.
 ]
 
 { #category : 'testing' }
@@ -80,8 +82,10 @@ MyPawn >> isFirstMove [
 { #category : 'path commands' }
 MyPawn >> moveTo: aSquare [ 
     "Déplace le pion sur une nouvelle case et met à jour son état."
-    super moveTo: aSquare.
-    aSquare contents: self.
+   " super moveTo: aSquare.
+    aSquare contents: self."
+	state moveTo: aSquare for: self.
+	
 ]
 
 { #category : 'rendering' }
@@ -96,22 +100,17 @@ MyPawn >> setPosition: aSquare [
     
 ]
 
+{ #category : 'accessing' }
+MyPawn >> state [ 
+   ^ state
+]
+
+{ #category : 'accessing' }
+MyPawn >> state: aState [ 
+  state := aState
+]
+
 { #category : 'rendering' }
-MyPawn >> targetSquaresLegal: aBoolean [
-
-	| singleStepSquare doubleStepSquare potentialSquares |
-	singleStepSquare := self isWhite
-		             ifTrue: [ square up ]
-		             ifFalse: [ square down ].
-
-	doubleStepSquare := self isWhite
-		             ifTrue: [ square up up ]
-		             ifFalse: [ square down down ].
-
-	potentialSquares := (self isFirstMove and: [ doubleStepSquare hasPiece not ])
-		                    ifTrue: [ { singleStepSquare} , { doubleStepSquare } ]
-		                    ifFalse: [ { singleStepSquare } ]. " a mettre dans le return "
-
-	^ potentialSquares select: [ :s |
-		  s notNil and: [ s hasPiece not or: [ s contents color ~= color ] ] ]
+MyPawn >> targetSquaresLegal: aBoolean [ 
+        ^ state targetSquaresLegal: self.
 ]
