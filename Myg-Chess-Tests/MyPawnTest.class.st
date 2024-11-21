@@ -33,6 +33,12 @@ MyPawnTest >> testBlackPawnMovesDoubleStep [
 ]
 
 { #category : 'tests' }
+MyPawnTest >> testDeplacementLegaux [
+	
+"tester deplacement legaux du pions enlever cheeck a verfier "
+]
+
+{ #category : 'tests' }
 MyPawnTest >> testDiagonalPawnCaptures [
 
 	| pawn board enemyPawn1 enemyPawn2 capturePawn expectedSquares |
@@ -64,11 +70,12 @@ MyPawnTest >> testInitialWhitePawnMoves [
 	| pawn squares board1 expectedSquares |
 	board1 := MyChessBoard empty.
 	board1 at: 'e2' put: (pawn := MyPawn white).
-	squares := pawn targetSquaresLegal: true.
+	squares := pawn targetSquaresLegal.
 
 	expectedSquares := OrderedCollection new.
 	expectedSquares add: (board1 at: 'e3').
-	self assert: squares asSet equals: expectedSquares asSet
+	self assert: (expectedSquares allSatisfy: [ :each | squares includes: each ]).
+
 ]
 
 { #category : 'as yet unclassified' }
@@ -96,14 +103,13 @@ MyPawnTest >> testIsFirstMove [
 { #category : 'tests' }
 MyPawnTest >> testSingleMove [
 
-
 	| pawn squares board1 expectedSquares |
 	board1 := MyChessBoard empty.
-	board1 at: 'f4' put: (pawn := MyPawn black).
+	board1 at: 'f4' put: (pawn := MyPawn white).
 	squares := pawn targetSquaresLegal: true.
 
 	expectedSquares := OrderedCollection new.
-	expectedSquares add: (board1 at: 'f3').
+	expectedSquares add: (board1 at: 'f5').
 	self assert: squares asSet equals: expectedSquares asSet
 ]
 

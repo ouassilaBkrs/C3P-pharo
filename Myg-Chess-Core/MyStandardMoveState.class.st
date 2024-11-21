@@ -6,12 +6,6 @@ Class {
 }
 
 { #category : 'as yet unclassified' }
-MyStandardMoveState >> diagonalPawnCaptures: aPawn [
-
-	 ^ (MyInitialMoveState new) diagonalPawnCaptures: aPawn.
-]
-
-{ #category : 'as yet unclassified' }
 MyStandardMoveState >> moveTo: aSquare for: aPawn [ 
         aPawn square emptyContents.
         aPawn square: aSquare.

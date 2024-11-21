@@ -10,24 +10,6 @@ Class {
 }
 
 { #category : 'as yet unclassified' }
-MyPawn >> diagonalCaptures: aBoolean [
-	" si couleur est diff de self et regard ele contenu de la diagonle , ajoute a liste target des pions que tu peux manger  square up left et square up righ"
-	|captureSquares|
-	
- captureSquares := OrderedCollection new.
-    self isWhite
-        ifTrue: [
-            captureSquares add: (square up left).
-            captureSquares add: (square up right).
-        ]
-        ifFalse: [
-            captureSquares add: (square down left).
-            captureSquares add: (square down right).
-        ].
-    ^ captureSquares
-]
-
-{ #category : 'as yet unclassified' }
 MyPawn >> diagonalPawnCaptures [
 
 	| leftCapture rightCapture captureSquares |
@@ -111,6 +93,27 @@ MyPawn >> state: aState [
 ]
 
 { #category : 'rendering' }
-MyPawn >> targetSquaresLegal: aBoolean [ 
-        ^ state targetSquaresLegal: self.
+MyPawn >> targetSquaresLegal [
+
+	| standardmove captureDiagonalPawn |
+	standardmove := state targetSquaresLegal: self.
+
+	captureDiagonalPawn := self diagonalPawnCaptures.
+
+
+	^ standardmove , captureDiagonalPawn
+]
+
+{ #category : 'rendering' }
+MyPawn >> targetSquaresLegal: aBoolean [
+  
+	 | standardmove captureDiagonalPawn |
+	
+	standardmove := state targetSquaresLegal: self.
+	
+	captureDiagonalPawn := self diagonalPawnCaptures.
+	
+
+	^ standardmove, captureDiagonalPawn 
+	
 ]
